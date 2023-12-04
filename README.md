@@ -1,2 +1,0 @@
-# Paymaster-Backend
-Paymaster backend 
