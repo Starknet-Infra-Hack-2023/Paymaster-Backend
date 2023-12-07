@@ -14,11 +14,11 @@ _app.get("/test", (req: Request, res: Response) => {
 });
 
 if (process.env.NODE_ENV !== "test") {
-  _app.listen(port, async () => {
+  _app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-    const blockListener = new BlockListener();
-    blockListener.startPolling();
   });
+  const blockListener = new BlockListener();
+  blockListener.startPolling();
 }
 
 export const app = _app;

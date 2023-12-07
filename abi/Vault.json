@@ -1,0 +1,135 @@
+[
+    {
+        "type": "impl",
+        "name": "VaultContractImpl",
+        "interface_name": "contracts::Vault::IVaultContract"
+    },
+    {
+        "type": "struct",
+        "name": "core::integer::u256",
+        "members": [
+            {
+                "name": "low",
+                "type": "core::integer::u128"
+            },
+            {
+                "name": "high",
+                "type": "core::integer::u128"
+            }
+        ]
+    },
+    {
+        "type": "interface",
+        "name": "contracts::Vault::IVaultContract",
+        "items": [
+            {
+                "type": "function",
+                "name": "deposit",
+                "inputs": [
+                    {
+                        "name": "token_address",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "get_funds_customer",
+                "inputs": [
+                    {
+                        "name": "token_address",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "withdraw",
+                "inputs": [
+                    {
+                        "name": "token_address",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "reciever",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "core::integer::u256"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            }
+        ]
+    },
+    {
+        "type": "constructor",
+        "name": "constructor",
+        "inputs": []
+    },
+    {
+        "type": "event",
+        "name": "contracts::Vault::VaultContract::DepositSuccess",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "token_address",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "data"
+            },
+            {
+                "name": "sender",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "data"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "contracts::Vault::VaultContract::CustomerAsk",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "token_address",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "data"
+            },
+            {
+                "name": "sender",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "data"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "contracts::Vault::VaultContract::Event",
+        "kind": "enum",
+        "variants": [
+            {
+                "name": "DepositSuccess",
+                "type": "contracts::Vault::VaultContract::DepositSuccess",
+                "kind": "nested"
+            },
+            {
+                "name": "CustomerAsk",
+                "type": "contracts::Vault::VaultContract::CustomerAsk",
+                "kind": "nested"
+            }
+        ]
+    }
+]
