@@ -9,22 +9,21 @@ import BalanceListener from "../../service/balance";
   const checkBalance = async () => {
     try {
       const desired_balance = await balanceListener.getBalance(
-        process.env.CONTRACT_ADDRESS || ""
+        process.env.VAULT_ADDRESS || "",
+        process.env.ETH_ADDRESS || ""
       );
       console.log("Balance:", Number(desired_balance));
-      if (Number(desired_balance) < 30) {
-        console.log("Balance is less than 30");
-        //if balance less than 30 it will need to check the ETH Balance
-        const eth_balance = await balanceListener.getBalance(
-          process.env.ETH_ADDRESS || ""
-        );
-        console.log("ETH Balance:", Number(eth_balance));
-
-        if (Number(eth_balance) < 0.1) {
-          console.log("ETH Balance is less than 0.1");
-        }
+      if (Number(desired_balance) < 1000000000000000) {
+        console.log("Balance is less than 0.001");
 
         //here should call the ML Model to predict what decision to make
+
+        //swap
+        await balanceListener.account.executeSwap(
+          process.env.TOKEN_CONTRACT_ADDRESS || "",
+          10000,
+          process.env.VAULT_CONTRACT_ADDRESS || ""
+        );
       }
     } catch (error) {
       console.error("Error checking balance:", error);

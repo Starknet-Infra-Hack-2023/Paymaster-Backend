@@ -7,7 +7,6 @@ import StarknetWallet from "./wallet";
 import path from "path";
 
 class BalanceListener {
-  tokenContractAddress: string;
   provider: ReturnType<typeof providerInfuraTestnet>;
   account: StarknetWallet;
   contractAbi: any;
@@ -17,10 +16,9 @@ class BalanceListener {
       Boolean
     ) as string[];
     this.provider = providerInfuraTestnet(keys);
-    this.tokenContractAddress = process.env.TOKEN_CONTRACT_ADDRESS || "";
     this.account = new StarknetWallet(
       process.env.ADDRESS || "",
-      process.env.PRIVATE_KEY || ""
+      process.env.PK || ""
     );
     this.contractAbi = JSON.parse(
       fs
@@ -29,21 +27,17 @@ class BalanceListener {
     );
   }
 
-  async getBalance(address: string): Promise<number> {
+  async getBalance(address: string, tokenAddress: string): Promise<number> {
     try {
       // Attempt to use the current provider
       const provider = this.provider.getNextRpcProvider();
-      const contract = new Contract(
-        this.contractAbi,
-        this.tokenContractAddress,
-        provider
-      );
-      return await contract.balance_of(address);
+      const contract = new Contract(this.contractAbi, tokenAddress, provider);
+      return await contract.balanceOf(address);
     } catch (error: any) {
       if (error.message.includes("fetch failed")) {
         // If the error is related to the limit, try the next key
         console.log("Switching API key due to limit.");
-        return this.getBalance(address); // Recursive call to retry with the next key
+        return this.getBalance(address, tokenAddress); // Recursive call to retry with the next key
       } else {
         // If it's a different kind of error, rethrow it
         throw error;

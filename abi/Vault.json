@@ -40,10 +40,14 @@
             },
             {
                 "type": "function",
-                "name": "get_funds_customer",
+                "name": "withdraw",
                 "inputs": [
                     {
                         "name": "token_address",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "receiver",
                         "type": "core::starknet::contract_address::ContractAddress"
                     },
                     {
@@ -56,14 +60,10 @@
             },
             {
                 "type": "function",
-                "name": "withdraw",
+                "name": "get_funds_customer",
                 "inputs": [
                     {
                         "name": "token_address",
-                        "type": "core::starknet::contract_address::ContractAddress"
-                    },
-                    {
-                        "name": "reciever",
                         "type": "core::starknet::contract_address::ContractAddress"
                     },
                     {

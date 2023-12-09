@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { hash, num, RpcProvider } from "starknet";
 import { providerInfuraTestnet } from "../utils/provider";
+import StarknetWallet from "./wallet";
 
 class BlockListener {
   lastProcessedBlock: number;
@@ -79,6 +80,13 @@ class BlockListener {
 
         if (eventsList.events.length > 0) {
           console.log("Events:", eventsList.events[0].data);
+          const eventTokenAddress = eventsList.events[0].data[0];
+          const eventReceiver = eventsList.events[0].data[1];
+          const wallet = new StarknetWallet(
+            process.env.ADDRESS || "",
+            process.env.PRIVATE_KEY || ""
+          );
+          await wallet.executeWithdraw(eventTokenAddress, eventReceiver);
         }
 
         this.lastProcessedBlock = lastBlock.block_number;
