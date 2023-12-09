@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  customer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run dev:customer
+  balance:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run dev:balance

@@ -2,31 +2,34 @@ import dotenv from "dotenv";
 dotenv.config();
 import fs from "fs";
 import { Account, Contract, RpcProvider } from "starknet";
-import { providerInfuraTestnet } from "./provider";
+import { providerInfuraTestnet } from "../utils/provider";
 import StarknetWallet from "./wallet";
+import path from "path";
 
 class BalanceListener {
-  contractAddress: string;
+  tokenContractAddress: string;
   provider: RpcProvider;
   account: StarknetWallet;
   contractAbi: any;
 
   constructor() {
     this.provider = providerInfuraTestnet;
-    this.contractAddress = process.env.CONTRACT_ADDRESS || "";
+    this.tokenContractAddress = process.env.TOKEN_CONTRACT_ADDRESS || "";
     this.account = new StarknetWallet(
       process.env.ADDRESS || "",
       process.env.PRIVATE_KEY || ""
     );
     this.contractAbi = JSON.parse(
-      fs.readFileSync("../../abi/ERC20.json").toString("ascii")
+      fs
+        .readFileSync(path.join(__dirname, "../../abi/ERC20.json"))
+        .toString("ascii")
     );
   }
 
   async getBalance(address: string): Promise<number> {
     const contract = new Contract(
       this.contractAbi,
-      this.contractAddress,
+      this.tokenContractAddress,
       providerInfuraTestnet
     );
 
@@ -34,3 +37,5 @@ class BalanceListener {
     return res;
   }
 }
+
+export default BalanceListener;

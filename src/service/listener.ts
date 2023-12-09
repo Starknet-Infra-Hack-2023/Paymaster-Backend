@@ -4,7 +4,7 @@ dotenv.config();
 import fs from "fs";
 import path from "path";
 import { hash, num, RpcProvider } from "starknet";
-import { providerInfuraTestnet } from "./provider";
+import { providerInfuraTestnet } from "../utils/provider";
 
 class BlockListener {
   lastProcessedBlock: number;

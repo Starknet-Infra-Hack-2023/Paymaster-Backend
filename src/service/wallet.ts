@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { Account, Contract } from "starknet";
-import { providerInfuraTestnet } from "./provider";
+import { providerInfuraTestnet } from "../utils/provider";
 import fs from "fs";
+import path from "path";
 
 class StarknetWallet {
   private account: Account;
@@ -20,7 +21,9 @@ class StarknetWallet {
     );
     this.contractAddress = process.env.CONTRACT_ADDRESS || "";
     this.contractAbi = JSON.parse(
-      fs.readFileSync("../../abi/Vault.json").toString("ascii")
+      fs
+        .readFileSync(path.join(__dirname, "../../abi/Vault.json"))
+        .toString("ascii")
     );
   }
 
