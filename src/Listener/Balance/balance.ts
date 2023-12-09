@@ -24,12 +24,6 @@ import BalanceListener from "../../service/balance";
           console.log("ETH Balance is less than 0.1");
         }
 
-        //if ETH Balance is less than 0.1
-
-        //if ETH Balance is more than 0.1
-
-        //if balance is more than 30 it will need to check the ETH Balance
-
         //here should call the ML Model to predict what decision to make
       }
     } catch (error) {

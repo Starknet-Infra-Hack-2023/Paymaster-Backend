@@ -8,12 +8,15 @@ import path from "path";
 
 class BalanceListener {
   tokenContractAddress: string;
-  provider: RpcProvider;
+  provider: ReturnType<typeof providerInfuraTestnet>;
   account: StarknetWallet;
   contractAbi: any;
 
   constructor() {
-    this.provider = providerInfuraTestnet;
+    const keys = [process.env.API_KEY, process.env.INFURA_API_KEY_2].filter(
+      Boolean
+    ) as string[];
+    this.provider = providerInfuraTestnet(keys);
     this.tokenContractAddress = process.env.TOKEN_CONTRACT_ADDRESS || "";
     this.account = new StarknetWallet(
       process.env.ADDRESS || "",
@@ -27,14 +30,25 @@ class BalanceListener {
   }
 
   async getBalance(address: string): Promise<number> {
-    const contract = new Contract(
-      this.contractAbi,
-      this.tokenContractAddress,
-      providerInfuraTestnet
-    );
-
-    const res = await contract.balance_of(address);
-    return res;
+    try {
+      // Attempt to use the current provider
+      const provider = this.provider.getNextRpcProvider();
+      const contract = new Contract(
+        this.contractAbi,
+        this.tokenContractAddress,
+        provider
+      );
+      return await contract.balance_of(address);
+    } catch (error: any) {
+      if (error.message.includes("fetch failed")) {
+        // If the error is related to the limit, try the next key
+        console.log("Switching API key due to limit.");
+        return this.getBalance(address); // Recursive call to retry with the next key
+      } else {
+        // If it's a different kind of error, rethrow it
+        throw error;
+      }
+    }
   }
 }
 

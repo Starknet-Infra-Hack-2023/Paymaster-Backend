@@ -9,12 +9,16 @@ import { providerInfuraTestnet } from "../utils/provider";
 class BlockListener {
   lastProcessedBlock: number;
   contractAddress: string;
-  provider: RpcProvider;
+  provider: ReturnType<typeof providerInfuraTestnet>;
   lastBlockFile: string;
   pollingInterval: NodeJS.Timeout | null;
 
   constructor() {
-    this.provider = providerInfuraTestnet;
+    const keys = [
+      process.env.INFURA_API_KEY,
+      process.env.INFURA_API_KEY_2,
+    ].filter(Boolean) as string[];
+    this.provider = providerInfuraTestnet(keys);
     this.contractAddress = process.env.CONTRACT_ADDRESS || "";
     this.lastBlockFile = path.join(__dirname, "../../data/lastBlock.json");
     this.lastProcessedBlock = this.readLastProcessedBlock();
@@ -61,9 +65,11 @@ class BlockListener {
     }
 
     try {
-      const lastBlock = await this.provider.getBlock("latest");
+      const provider = this.provider.getNextRpcProvider();
+      const lastBlock = await provider.getBlock("latest");
+
       if (lastBlock.block_number > this.lastProcessedBlock) {
-        const eventsList = await this.provider.getEvents({
+        const eventsList = await provider.getEvents({
           from_block: { block_number: this.lastProcessedBlock + 1 },
           to_block: { block_number: lastBlock.block_number },
           address: this.contractAddress,
@@ -74,18 +80,27 @@ class BlockListener {
         if (eventsList.events.length > 0) {
           console.log("Events:", eventsList.events[0].data);
         }
+
         this.lastProcessedBlock = lastBlock.block_number;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching events:", error);
+      if (error.message.includes("fetch failed")) {
+        // If the error is related to the API key limit, switch to the next available key
+        console.log("Switching API key due to limit.");
+        this.listenForEvents(); // Recursive call to retry with the next key
+      }
+      // Otherwise, allow the error to be logged and the process to continue
     }
   }
 
-  startPolling(interval: number = 10000): void {
-    this.pollingInterval = setInterval(async () => {
-      await this.listenForEvents();
+  startPolling(interval: number = 60000): void {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+    }
+    this.pollingInterval = setInterval(() => {
+      this.listenForEvents().catch(console.error);
     }, interval);
   }
 }
-
 export default BlockListener;
